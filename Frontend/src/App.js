@@ -132,16 +132,25 @@ function App() {
               Result: {results.result}
             </p>
 
+            {/* Chart */}
             <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={dataForChart}>
+              <BarChart
+                data={dataForChart}
+                margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
+                <YAxis
+                  tickFormatter={(value) => `$${(value / 1_000_000).toFixed(1)}M`}
+                />
+                <Tooltip
+                  formatter={(value) => "$" + value.toLocaleString()}
+                />
                 <ReferenceLine
-                  y={results.baselMinimum * 1_000_000}
+                  y={results.baselMinimum * 10_000_000} // scale to match capital
                   stroke="red"
                   strokeDasharray="3 3"
+                  label={{ value: 'Basel Minimum', position: 'insideTopRight', fill: 'red' }}
                 />
                 <Bar dataKey="Capital" fill="#4f46e5" />
               </BarChart>
@@ -158,8 +167,7 @@ function App() {
             fontSize: 14
           }}
         >
-          Built as a learning project by a former Mainframe
-          Developer transitioning to Full-Stack Engineering
+          Built as a learning project by a former Stress Testing Mainframe Developer transitioning to Full-Stack Engineering
         </footer>
       </div>
     </div>
