@@ -1,23 +1,23 @@
 // -----------------------------------------------
 // Full-Stack Banking Stress Testing API (Backend)
-// -----------------------------
+// Node.js + Express
+// -----------------------------------------------
 
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const fetch = require("node-fetch"); // npm install node-fetch@2
+const fetch = require("node-fetch"); // optional if using FRED API
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ---------------- Bank Profile & Stress Test Calculations ----------------
-
+// ---------------- Bank Profile ----------------
 const BANK_PROFILE = {
   bankName: "Demo Global Bank",
-  tier1Capital: 120_000_000,       // Tier 1 Capital
-  riskWeightedAssets: 1_000_000_000, // Total risk-weighted assets
-  baselMinimumCAR: 10.5             // Basel minimum Capital Adequacy Ratio (%)
+  tier1Capital: 120_000_000,        // Tier 1 Capital
+  riskWeightedAssets: 1_000_000_000, // Risk-weighted assets
+  baselMinimumCAR: 10.5             // Basel minimum CAR (%)
 };
 
 // Calculate credit loss based on unemployment shock (%)
@@ -37,6 +37,11 @@ function calculateCAR(capitalAfterStress) {
 
 // ---------------- API Endpoints ----------------
 
+// Health check
+app.get("/api/health", (req, res) => 
+  res.json({ status: "OK", service: "Stress Testing API" })
+);
+
 // Run Stress Test
 app.post("/api/stress-test", (req, res) => {
   const { unemploymentShock = 3, gdpShock = -4 } = req.body;
@@ -48,8 +53,9 @@ app.post("/api/stress-test", (req, res) => {
   const capitalAfterStress = BANK_PROFILE.tier1Capital - totalLoss;
   const car = calculateCAR(capitalAfterStress);
 
+  const result = car >= BANK_PROFILE.baselMinimumCAR ? "PASS" : "FAIL";
+
   res.json({
-    scenario: "Severely Adverse",
     inputs: { unemploymentShock, gdpShock },
     losses: {
       creditLoss: Math.round(creditLoss),
@@ -62,16 +68,11 @@ app.post("/api/stress-test", (req, res) => {
     },
     capitalAdequacyRatio: car.toFixed(2),
     baselMinimum: BANK_PROFILE.baselMinimumCAR,
-    result: car >= BANK_PROFILE.baselMinimumCAR ? "PASS" : "FAIL"
+    result
   });
 });
 
-// Health Check Endpoint
-app.get("/api/health", (req, res) => 
-  res.json({ status: "OK", service: "Stress Testing API" })
-);
-
-// Fetch latest US unemployment rate from FRED API
+// Optional: Fetch latest US unemployment rate from FRED API
 const FRED_API_KEY = process.env.FRED_API_KEY;
 
 app.get("/api/unemployment", async (req, res) => {
@@ -88,8 +89,6 @@ app.get("/api/unemployment", async (req, res) => {
 
 // ---------------- Start Server ----------------
 const PORT = process.env.PORT || 4000;
-
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Stress Testing API running on port ${PORT}`);
 });
-

@@ -73,15 +73,17 @@ Table of Sample Scenarios (Real FRED Data)
 Note: Adjusted Unemployment Shock = FRED latest unemployment rate + User Input
 
 ## Table of Sample Scenarios (Real FRED Data)
+## Sample Scenarios (Using Real FRED Data)
 
-> **Note:** `Adjusted Unemployment Shock = FRED latest unemployment rate + User Input`  
+> **Note:**  
+> `Adjusted Unemployment = FRED unemployment + User shock`
 
-| FRED Unemployment (%) | Input Shock (%) | GDP Shock (%) | Capital After Stress ($) | CAR (%) | Result |
-|----------------------|----------------|---------------|-------------------------|---------|--------|
-| 3.4                  | 0.5            | 0             | 42,000,000              | 4.2     | FAIL   |
-| 3.4                  | 0              | 0             | 52,000,000              | 5.2     | FAIL   |
-| 0                    | 0              | 0             | 120,000,000             | 12      | PASS   |
-| 0                    | 0              | -0.5          | 105,000,000             | 10.5    | PASS   |
+| FRED Unemployment (%) | User Shock (%) | GDP Shock (%) | Capital After Stress ($) | CAR (%) | Result |
+| --------------------: | -------------: | ------------: | -----------------------: | ------: | :----: |
+|                   3.4 |            0.5 |           0.0 |               42,000,000 |     4.2 | ❌ FAIL |
+|                   3.4 |            0.0 |           0.0 |               52,000,000 |     5.2 | ❌ FAIL |
+|                   0.0 |            0.0 |           0.0 |              120,000,000 |    12.0 | ✅ PASS |
+|                   0.0 |            0.0 |          -0.5 |              105,000,000 |    10.5 | ✅ PASS |
 
 ✅ PASS = CAR ≥ 10.5%
 ❌ FAIL = CAR < 10.5%
