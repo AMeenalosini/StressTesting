@@ -167,7 +167,7 @@ function App() {
             fontSize: 14
           }}
         >
-          Built as a learning project by a former Stress Testing Mainframe Developer transitioning to Full-Stack Engineering
+          Built as a learning project by a former Mainframe Developer transitioning to Full-Stack Engineering
         </footer>
       </div>
     </div>
