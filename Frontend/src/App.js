@@ -16,26 +16,29 @@ function App() {
   const [latestUnemployment, setLatestUnemployment] = useState(null);
 
   // Optional: Fetch latest US unemployment rate
-  useEffect(() => {
-    async function fetchUnemployment() {
-      try {
-        const res = await fetch("http://localhost:4000/api/unemployment");
-        const data = await res.json();
-        setLatestUnemployment(parseFloat(data.unemploymentRate) || 0);
-      } catch {
-        setLatestUnemployment(0); // fallback if API not available
-      }
+ useEffect(() => {
+  async function fetchUnemployment() {
+    try {
+      const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+      const res = await fetch(`${API_BASE_URL}/api/unemployment`);
+      const data = await res.json();
+      setLatestUnemployment(parseFloat(data.unemploymentRate) || 0);
+    } catch (err) {
+      console.error("Failed to fetch unemployment:", err);
+      setLatestUnemployment(0);
     }
-    fetchUnemployment();
-  }, []);
+  }
+  fetchUnemployment();
+}, []);
 
   const handleRunTest = async () => {
+    const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
     const adjustedScenario = {
       ...scenario,
       unemploymentShock: latestUnemployment + scenario.unemploymentShock
     };
 
-    const res = await fetch("http://localhost:4000/api/stress-test", {
+    const res = await fetch(`${API_BASE_URL}/api/stress-test`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(adjustedScenario)
@@ -44,6 +47,7 @@ function App() {
     const data = await res.json();
     setResults(data);
   };
+
 
   const dataForChart = results
     ? [
